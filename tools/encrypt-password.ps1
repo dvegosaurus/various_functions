@@ -106,7 +106,7 @@ function GenerateForm {
     $form1.ClientSize = $System_Drawing_Size
     $form1.DataBindings.DefaultDataSourceUpdateMode = 0
     $form1.Name = "form1"
-    $form1.Text = "Primal Form"
+    $form1.Text = "Super Password Encryptor"
     
     $label3.DataBindings.DefaultDataSourceUpdateMode = 0
     
