@@ -55,7 +55,7 @@ function GenerateForm {
         $OpenFileDialog.filter = "All files (*.*)| *.*"
         $OpenFileDialog.ShowDialog() |  Out-Null
         $filename = $OpenFileDialog.filename
-        $string = start-process -FilePath "powershell.exe" -Credential $creds -argumentlist "-Command ConvertTo-SecureString $passwordToEncrypt -AsPlainText -Force | ConvertFrom-SecureString | out-file $filename"
+        $string = start-process -FilePath "powershell.exe" -Credential $creds -argumentlist ('-Command ConvertTo-SecureString {0} -AsPlainText -Force | ConvertFrom-SecureString | out-file {1}' -f $passwordToEncrypt,$filename)
     }
     
     $handler_label1_Click= 
@@ -72,7 +72,7 @@ function GenerateForm {
         $OpenFileDialog.filter = "All files (*.*)| *.*"
         $OpenFileDialog.ShowDialog() |  Out-Null
         $filename = $OpenFileDialog.filename
-        start-process -FilePath "psexec.Exe"  -argumentlist "/accepteula -s -i powershell.exe -Command ConvertTo-SecureString $passwordToEncrypt -AsPlainText -Force | ConvertFrom-SecureString | out-file $filename"
+        start-process -FilePath "psexec.Exe"  -argumentlist ('/accepteula -s -i powershell.exe -Command ConvertTo-SecureString {0} -AsPlainText -Force | ConvertFrom-SecureString | out-file {1}' -f $passwordToEncrypt,$filename)
     
     }
     
@@ -240,6 +240,7 @@ function GenerateForm {
     $System_Drawing_Size.Width = 319
     $textBox2.Size = $System_Drawing_Size
     $textBox2.TabIndex = 2
+    $textBox2.text = "DOMAIN\username"
     
     $form1.Controls.Add($textBox2)
     
