@@ -92,6 +92,30 @@ Function Get-RDPSession {
     
     
     function disconnect-RDPSession {
+            <#
+        .SYNOPSIS
+            disconnect RDPSessions using session ID
+    
+        .DESCRIPTION
+            disconnect RDPSessions using session ID
+    
+        .PARAMETER ComputerName
+            session ID and computer
+    
+        .EXAMPLE
+            PS C:\> disconnect-RDPSession -computer <computer> -sessionID <ID>
+            disconnect the session ID on a computer
+
+        .EXAMPLE
+            PS C:\> get-RDPSession -Computer $computer  | where {$_.state -match "d.co"} | disconnect-RDPSession
+            disconnect all disconnected session on a compuer
+    
+          
+    ************************************************************************
+     Notes: Run as administrator
+     Author: dvegosaurus https://github.com/dvegosaurus
+    ************************************************************************
+    #>
         [CmdletBinding()]
         param(
             [Parameter(ValueFromPipelineByPropertyName)]
