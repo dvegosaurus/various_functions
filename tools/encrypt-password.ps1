@@ -48,14 +48,14 @@ function GenerateForm {
     {
         $user = $textBox2.Text
         $userpassword  = $textBox3.text | ConvertTo-SecureString -AsPlainText -Force
-        $passwordToEncrypt = $textBox1.Text 
+        $passwordToEncrypt = $textBox1.Text
         $creds = [System.Management.Automation.PSCredential]::new($user, $userpassword)
         $OpenFileDialog = New-Object System.Windows.Forms.SaveFileDialog
         $OpenFileDialog.initialDirectory = $initialDirectory
         $OpenFileDialog.filter = "All files (*.*)| *.*"
         $OpenFileDialog.ShowDialog() |  Out-Null
         $filename = $OpenFileDialog.filename
-        $string = start-process -FilePath "powershell.exe" -Credential $creds -argumentlist ('-Command ConvertTo-SecureString {0} -AsPlainText -Force | ConvertFrom-SecureString | out-file {1}' -f $passwordToEncrypt,$filename)
+        start-process -FilePath "powershell.exe" -Credential $creds -argumentlist ('-Command ConvertTo-SecureString "{0}" -AsPlainText -Force | ConvertFrom-SecureString | out-file {1}' -f $passwordToEncrypt,$filename)
     }
     
     $handler_label1_Click= 
@@ -72,7 +72,7 @@ function GenerateForm {
         $OpenFileDialog.filter = "All files (*.*)| *.*"
         $OpenFileDialog.ShowDialog() |  Out-Null
         $filename = $OpenFileDialog.filename
-        start-process -FilePath "psexec.Exe"  -argumentlist ('/accepteula -s -i powershell.exe -Command ConvertTo-SecureString {0} -AsPlainText -Force | ConvertFrom-SecureString | out-file {1}' -f $passwordToEncrypt,$filename)
+        start-process -FilePath "psexec.Exe"  -argumentlist ('/accepteula -s -i powershell.exe -Command ConvertTo-SecureString "{0}" -AsPlainText -Force | ConvertFrom-SecureString | out-file {1}' -f $passwordToEncrypt,$filename)
     
     }
     
@@ -106,7 +106,7 @@ function GenerateForm {
     $form1.ClientSize = $System_Drawing_Size
     $form1.DataBindings.DefaultDataSourceUpdateMode = 0
     $form1.Name = "form1"
-    $form1.Text = "Super Password Encryptor"
+    $form1.Text = "Not So Super Password Encryptor"
     
     $label3.DataBindings.DefaultDataSourceUpdateMode = 0
     
