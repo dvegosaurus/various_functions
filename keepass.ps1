@@ -61,11 +61,11 @@ $pwd = ConvertTo-SecureString "toto" -AsPlainText -Force
 $cred = New-Object System.Management.Automation.PSCredential($user,$pwd)
 
 # create the keepass
-$dbname = "kp"
+$dbname = "keepass"
 $dbprofilename = "test"
-$dbpath = "C:\Temp\$dbname.kdbx"
+$dbpath = "C:\Temp\$($dbname).kdbx"
 
-New-KeePassDatabase -DatabasePath C:\temp\kp.kdbx -MasterKey $cred
+New-KeePassDatabase -DatabasePath $dbpath -MasterKey $cred
 Get-KeePassDatabaseConfiguration | Remove-KeePassDatabaseConfiguration -Confirm:$false
 $kpdatabase = New-KeePassDatabaseConfiguration -DatabasePath $dbpath -DatabaseProfileName $dbprofilename -UseMasterKey 
 
