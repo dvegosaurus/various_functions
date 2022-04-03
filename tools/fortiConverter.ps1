@@ -101,6 +101,7 @@ function GenerateForm {
             ${internet-service}
             ${internet-service-id}
             ${learning-mode}
+            ${logtraffic-start}
         
             rule ($id){$this.id = $id}
         }
@@ -110,20 +111,24 @@ function GenerateForm {
         
         if (get-variable currentRule){Remove-Variable currentrule} # in case of multiple run in the same shell
         
+        $foundPolicies = $false
         $data = foreach ($line in $filecontent){
-            
-           if ($line -match 'edit \d+$'){
-               if (get-variable currentRule -ErrorAction SilentlyContinue){$currentRule}
-               $currentRule = [rule]::new(($line -replace "edit",'' -replace '\s',''))
-            }
-           if ($line -match 'set .+$'){
-                $parsedLine = $policyValues.Matches($line)
-                $value = ($parsedLine.groups | where {$_.name -eq "policy_value"}).value
-                $name = ($parsedLine.groups | where {$_.name -eq "policy_key"}).Value
-                $currentRule.$name = $value -replace '"',''
-                
-            }
+        
+        if ($line -match "config firewall policy" ){$foundPolicies = $true}
+        if (-not $foundPolicies){continue}
+        if ($line -match 'edit \d+$'){
+        if (get-variable currentRule -ErrorAction SilentlyContinue){$currentRule}
+        $currentRule = [rule]::new(($line -replace "edit",'' -replace '\s',''))
         }
+        if ($line -match 'set .+$'){
+            $parsedLine = $policyValues.Matches($line)
+            $value = ($parsedLine.groups | where {$_.name -eq "policy_value"}).value
+            $name = ($parsedLine.groups | where {$_.name -eq "policy_key"}).Value
+            $currentRule.$name = $value -replace '"',''
+            
+        }
+        if ($line -match "end" ){break}
+}
         
         $data += $currentRule # get the last rule
         
