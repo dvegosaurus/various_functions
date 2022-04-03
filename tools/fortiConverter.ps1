@@ -114,7 +114,8 @@ function GenerateForm {
         $foundPolicies = $false
         $data = foreach ($line in $filecontent){
         
-        if ($line -match "config firewall policy" ){$foundPolicies = $true}
+        # check if this is a full export, if yes parse the file until we reach the firewall policy
+        if ($line -match "config firewall policy" -or $filecontent -notmatch "config firewall policy" ){$foundPolicies = $true}
         if (-not $foundPolicies){continue}
         if ($line -match 'edit \d+$'){
         if (get-variable currentRule -ErrorAction SilentlyContinue){$currentRule}
