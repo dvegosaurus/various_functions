@@ -6,6 +6,10 @@ public static extern IntPtr GetConsoleWindow();
 public static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);
 '
 
+
+$global:PSDefaultParameterValues = @{'Invoke-RestMethod:Proxy'='http://PRSM-SRVLIN1016:3128'}
+
+
 function Hide-Console
 {
     $consolePtr = [Console.Window]::GetConsoleWindow()
@@ -48,14 +52,15 @@ function GenerateForm {
     {
         $user = $textBox2.Text
         $userpassword  = $textBox3.text | ConvertTo-SecureString -AsPlainText -Force
-        $passwordToEncrypt = $textBox1.Text
+        $passwordToEncrypt = $textBox1.Text 
         $creds = [System.Management.Automation.PSCredential]::new($user, $userpassword)
         $OpenFileDialog = New-Object System.Windows.Forms.SaveFileDialog
         $OpenFileDialog.initialDirectory = $initialDirectory
         $OpenFileDialog.filter = "All files (*.*)| *.*"
         $OpenFileDialog.ShowDialog() |  Out-Null
         $filename = $OpenFileDialog.filename
-        start-process -FilePath "powershell.exe" -Credential $creds -argumentlist ('-Command ConvertTo-SecureString "{0}" -AsPlainText -Force | ConvertFrom-SecureString | out-file {1}' -f $passwordToEncrypt,$filename)
+		$workingdirectory = split-path $filename
+        $string = start-process -FilePath "powershell.exe" -Credential $creds -argumentlist "-Command ConvertTo-SecureString $passwordToEncrypt -AsPlainText -Force | ConvertFrom-SecureString | out-file $filename" -workingdirectory $workingdirectory
     }
     
     $handler_label1_Click= 
@@ -72,7 +77,8 @@ function GenerateForm {
         $OpenFileDialog.filter = "All files (*.*)| *.*"
         $OpenFileDialog.ShowDialog() |  Out-Null
         $filename = $OpenFileDialog.filename
-        start-process -FilePath "psexec.Exe"  -argumentlist ('/accepteula -s -i powershell.exe -Command ConvertTo-SecureString "{0}" -AsPlainText -Force | ConvertFrom-SecureString | out-file {1}' -f $passwordToEncrypt,$filename)
+		$workingdirectory = split-path $filename
+        start-process -FilePath "psexec.Exe"  -argumentlist "/accepteula -s -i powershell.exe -Command ConvertTo-SecureString $passwordToEncrypt -AsPlainText -Force | ConvertFrom-SecureString | out-file $filename" -workingdirectory $workingdirectory
     
     }
     
@@ -106,7 +112,7 @@ function GenerateForm {
     $form1.ClientSize = $System_Drawing_Size
     $form1.DataBindings.DefaultDataSourceUpdateMode = 0
     $form1.Name = "form1"
-    $form1.Text = "Not So Super Password Encryptor"
+    $form1.Text = "Super Password Encryptor"
     
     $label3.DataBindings.DefaultDataSourceUpdateMode = 0
     
@@ -240,7 +246,6 @@ function GenerateForm {
     $System_Drawing_Size.Width = 319
     $textBox2.Size = $System_Drawing_Size
     $textBox2.TabIndex = 2
-    $textBox2.text = "DOMAIN\username"
     
     $form1.Controls.Add($textBox2)
     
