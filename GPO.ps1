@@ -34,6 +34,7 @@ function get-CSVGPOReport {
                     [PSCustomObject]@{
                         Name      = $gpo.displayname
                         Scope     = $gpoScope
+                        Category  = $policy.Category
                         Type      = "GPO"
                         parameter = $policy.name
                         state     = $policy.state
@@ -50,6 +51,7 @@ function get-CSVGPOReport {
                 $PSO = [PSCustomObject]@{
                     Name      = $gpo.displayname
                     Scope     = $gpoScope
+                    Category  = "GPP"
                     Type      = ""
                     parameter = ""
                     state     = ""
