@@ -1,7 +1,3 @@
-
-$domainname = "contoso.local"
-
-
 function get-CSVGPOReport {
 
     [cmdletbinding()]
@@ -168,4 +164,54 @@ function get-CSVGPOReport {
    
 }
 
-get-CSVGPOReport -domain $domainname | out-gridview
+function get-CSVSecPolReport {
+
+    [cmdletbinding()]
+    param(
+        $domain
+    )
+
+    $files = gci "\\$domain\sysvol\$domain\Policies\*\Machine\Microsoft\Windows NT\SecEdit\*"  -File
+
+    foreach ($file in $files){
+        
+        $null = $file -match '\{(.+)\}'
+        $gpoID = $Matches[1]
+        $gpo = get-gpo -guid $gpoID
+        $report = [xml](Get-GPOReport -ReportType xml -id $gpo.id)
+        $content = get-content $file.FullName
+
+        foreach ($line in $content){
+
+            if ($line -match '\[.+\]'){
+            
+                $PSO = [PSCustomObject]@{
+                    name      = $gpo.DisplayName
+                    Scope     = "machine"
+                    Category  = "secpol"
+                    Type      = ""
+                    parameter = ""
+                    state     = ""
+                    linked    = if ($report.gpo.linksto){$true} else {$false} 
+                }
+                $PSO.Type = $line -replace '\[|\]',''
+                continue
+            }
+            else {
+                $split = $line.Split('=')
+                $PSO.parameter = $split[0]
+                $pso.state = $split[1]
+            }
+
+            $PSO
+        }
+
+    }
+
+}
+
+
+$domainname = "contoso.local"
+$data = get-CSVGPOReport -domain $domainname 
+$data += get-CSVSecPolReport -domain $domainname
+$data  | out-gridview
