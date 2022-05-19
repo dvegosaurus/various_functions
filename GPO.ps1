@@ -7,6 +7,7 @@ function get-CSVGPOReport {
     [cmdletbinding()]
     param(
         $domain
+
     )
 
     # INIT
@@ -128,15 +129,43 @@ function get-CSVGPOReport {
                                 $PSO.parameter = $item.targetPath
                                 $PSO.state     = $item.shortcutPath
                         }  
+
+                        # group items
+                        if ($item.psobject.properties.name -contains "groupname"){
+                                $PSO.Type      = "shortcut"
+                                $PSO.parameter = $item.targetPath
+                                $PSO.state     = $item.shortcutPath
+                        }  
+
+
                         
                         $PSO
        
                     } # foreach ($item in $items)
             } # foreach ($gpp in $gpps)
 
+
+            # extract scripts
+            $lastpath = if ($gpoScope -match "computer"){"machine"} else {"user"}
+            [array]$scripts = gci "\\$domainname\sysvol\$domainname\Policies\{$($gpo.id)}\$lastpath" -Recurse -file | where {$_.FullName -match "\.ps1|\.cmd"}
+            
+            foreach ($script in $scripts){
+                 $PSO = [PSCustomObject]@{
+                        Name      = $gpo.displayname
+                        Scope     = $gpoScope
+                        Category  = "scripts"
+                        Type      = "scripts"
+                        parameter = $script.basename
+                        state     = $script.basename
+                        Linked    = if ($report.gpo.linksto){$true} else {$false}
+                    }
+
+                    $PSO
+            } #   foreach ($script in $scripts){
+
         } # foreach ($gpoScope in $gpoScopes)
     }      
    
 }
 
-get-CSVGPOReport -domain $domainname | ft
+get-CSVGPOReport -domain $domainname | out-gridview
