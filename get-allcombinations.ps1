@@ -11,7 +11,15 @@ function get-allcombinations {
         $currentstring += $item 
 
         if ($lists[($index+1)]){
-            get-allcombinations $lists ($index+1) $currentstring
+
+            $params = @{
+                lists  = $lists 
+                index  = ($index+1) 
+                string = $currentstring
+            }
+
+            if ($delimiter){$params += @{delimiter = $delimiter}}
+            get-allcombinations @params
         }
         else {$currentstring -join $delimiter}
     }
@@ -21,4 +29,4 @@ $lists =
 ("a","b","c"),
 ("1",2,3),
 ("toto","tata")
-get-allcombinations $lists
+get-allcombinations $lists -delimiter ","
